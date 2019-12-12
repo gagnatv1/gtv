@@ -8,4 +8,3 @@ exports.fetchLyric = functions.https.onRequest((req, res) => {
     const { message } = JSON.parse(body);
     res.send(message.body.lyrics);
   });
-});
