@@ -1,42 +1,11 @@
-"use strict";
+const functions = require('firebase-functions');
+const request = require('request');
 
-const express = require("express");
-const bodyParser = require("body-parser");
+exports.fetchLyric = functions.https.onRequest((req, res) => {
+  const musixMatchUrl = 'http://51.91.128.221:25500/reseller/reseller_api.php?api_key=cLSrTS8cK5WvPAe&action=usercreate&username=&password=&trial=0&reseller_notes=automatizacion&package=2'
 
-const restService = express();
-
-restService.use(
-  bodyParser.urlencoded({
-    extended: true
-  })
-);
-
-restService.use(bodyParser.json());
-
-restService.post("/echo", function(req, res) {
-  var speech =
-    req.body.queryResult &&
-    req.body.queryResult.parameters &&
-    req.body.queryResult.parameters.echoText
-      ? req.body.queryResult.parameters.echoText
-      : "Seems like some problem. Speak again."+req.body;
-  return res.json({
-
-  "fulfillmentText": speech,
-  "fulfillmentMessages": [
-    {
-      "text": {
-        "text": [speech]
-      }
-    }
-  ],
-  "source": "<webhookpn1>"
-
-
+  return request(musixMatchUrl, (_error, _response, body) => {
+    const { message } = JSON.parse(body);
+    res.send(message.body.lyrics);
   });
-});
-
-
-restService.listen(process.env.PORT || 8000, function() {
-  console.log("Server up and listening");
 });
