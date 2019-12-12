@@ -1,3 +1,16 @@
+const functions = require('firebase-functions');
+const request = require('request');
+
+exports.fetchLyric = functions.http.onRequest((req, res) => {
+  const musixMatchUrl = 'https://api.musixmatch.com/ws/1.1/matcher.lyrics.get'
+        + '?format=json'
+
+  return request(musixMatchUrl, (_error, _response, body) => {
+    const { message } = JSON.parse(body);
+    res.send(message.body.lyrics);
+  });
+});
+
 "use strict";
 
 const express = require("express");
@@ -10,31 +23,6 @@ restService.use(
     extended: true
   })
 );
-
-restService.use(bodyParser.json());
-
-restService.post("/echo", function(req, res) {
-  var speech =
-    req.body.queryResult &&
-    req.body.queryResult.parameters &&
-    req.body.queryResult.parameters.echoText
-      ? req.body.queryResult.parameters.echoText
-      : "Seems like some problem. Speak again."+req.body;
-  return res.json({
-
-  "fulfillmentText": speech,
-  "fulfillmentMessages": [
-    {
-      "text": {
-        "text": [speech]
-      }
-    }
-  ],
-  "source": "<webhookpn1>"
-
-
-  });
-});
 
 
 restService.listen(process.env.PORT || 8000, function() {
